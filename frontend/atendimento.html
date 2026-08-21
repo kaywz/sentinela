@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Atendimento</h2>
+
+<input id="nome" placeholder="Nome">
+
+<input id="cpf" placeholder="CPF">
+
+<select id="tipo">
+  <option value="Convenio">Convenio</option>
+  <option value="Particular">Particular</option>
+</select>
+
+<input type="file" id="foto">
+
+<button onclick="cadastrar()">Cadastrar</button>
+
+</div>
+
+
+<script>
+
+function cadastrar(){
+
+ fetch("http://localhost:3000/atendimento",{
+
+  method:"POST",
+
+  headers:{
+    "Content-Type":"application/json"
+  },
+
+  body: JSON.stringify({
+
+    nome: document.getElementById("nome").value,
+
+    cpf: document.getElementById("cpf").value,
+
+    tipo: document.getElementById("tipo").value
+
+  })
+
+ })
+
+ .then(res => res.json())
+
+ .then(data => {
+
+    alert("Paciente cadastrado com sucesso!");
+
+    // envia para a página de triagem
+    window.location.href = "triagem.html";
+
+ })
+
+ .catch(err => {
+
+    console.error(err);
+
+    alert("Erro ao cadastrar o paciente.");
+
+ });
+
+}
+
+</script>
+
+</body>
+</html>

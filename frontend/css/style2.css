@@ -1,0 +1,278 @@
+/* ===========================
+   RESET
+===========================*/
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Poppins","Segoe UI",sans-serif;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:
+    radial-gradient(circle at top left,#64b5ff 0%,transparent 35%),
+    radial-gradient(circle at bottom right,#1b74ff 0%,transparent 40%),
+    linear-gradient(135deg,#edf6ff,#c8e2ff);
+}
+
+/* ===========================
+   CARD LOGIN
+===========================*/
+
+.container{
+
+    width:430px;
+
+    padding:45px;
+
+    border-radius:28px;
+
+    background:rgba(255,255,255,.78);
+
+    backdrop-filter:blur(20px);
+
+    border:1px solid rgba(255,255,255,.4);
+
+    box-shadow:
+    0 25px 70px rgba(0,0,0,.15);
+
+    animation:entrada .7s ease;
+
+}
+
+@keyframes entrada{
+
+    from{
+
+        opacity:0;
+        transform:translateY(30px);
+
+    }
+
+    to{
+
+        opacity:1;
+        transform:translateY(0);
+
+    }
+
+}
+
+/* ===========================
+   LOGO
+===========================*/
+
+.logo{
+
+    width:110px;
+    height:110px;
+
+    margin:auto;
+
+    margin-bottom:25px;
+
+    border-radius:50%;
+
+    background:linear-gradient(135deg,#0d6efd,#59a7ff);
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    box-shadow:
+    0 15px 35px rgba(13,110,253,.45);
+
+}
+
+.cross{
+
+    width:22px;
+    height:60px;
+
+    background:white;
+
+    border-radius:5px;
+
+    position:relative;
+
+}
+
+.cross::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:60px;
+    height:22px;
+
+    background:white;
+
+    top:19px;
+    left:-19px;
+
+    border-radius:5px;
+
+}
+
+/* ===========================
+   TITULO
+===========================*/
+
+h2{
+
+    color:#004aad;
+
+    font-size:30px;
+
+    text-align:center;
+
+    margin-bottom:8px;
+
+}
+
+.subtitulo{
+
+    text-align:center;
+
+    color:#7a869a;
+
+    margin-bottom:30px;
+
+}
+
+/* ===========================
+   INPUTS
+===========================*/
+
+input{
+
+    width:100%;
+
+    padding:17px;
+
+    margin:12px 0;
+
+    border:none;
+
+    border-radius:15px;
+
+    background:#f4f8ff;
+
+    font-size:15px;
+
+    transition:.35s;
+
+}
+
+input:hover{
+
+    background:#eef5ff;
+
+}
+
+input:focus{
+
+    outline:none;
+
+    background:white;
+
+    box-shadow:
+    0 0 0 4px rgba(13,110,253,.15);
+
+}
+
+/* ===========================
+   BOTÃO
+===========================*/
+
+button{
+
+    width:100%;
+
+    padding:17px;
+
+    margin-top:18px;
+
+    border:none;
+
+    border-radius:15px;
+
+    background:linear-gradient(135deg,#0d6efd,#5aa4ff);
+
+    color:white;
+
+    font-size:17px;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.35s;
+
+}
+
+button:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:
+    0 15px 35px rgba(13,110,253,.35);
+
+}
+
+button:active{
+
+    transform:scale(.98);
+
+}
+
+/* ===========================
+   FOOTER
+===========================*/
+
+.footer{
+
+    margin-top:25px;
+
+    text-align:center;
+
+    color:#6b7280;
+
+    font-size:13px;
+
+}
+
+/* ===========================
+   RESPONSIVO
+===========================*/
+
+@media(max-width:500px){
+
+.container{
+
+width:95%;
+
+padding:35px 25px;
+
+}
+
+.logo{
+
+width:90px;
+height:90px;
+
+}
+
+h2{
+
+font-size:25px;
+
+}
+
+}

@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html>
+<head><link rel="stylesheet" href="css/style.css"></head>
+<body>
+<div class="container">
+<h2>Atendimento</h2>
+
+<input id="nome" placeholder="Nome">
+<input id="cpf" placeholder="CPF">
+
+<select id="tipo">
+  <option>Convenio</option>
+  <option>Particular</option>
+</select>
+
+<input type="file" id="foto">
+
+<button onclick="cadastrar()">Cadastrar</button>
+</div>
+
+<script>
+function cadastrar(){
+ fetch("http://localhost:3000/atendimento",{
+  method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body: JSON.stringify({
+    nome: nome.value,
+    cpf: cpf.value,
+    tipo: tipo.value
+  
+  })
+ });
+  .then(res => res.json())
+
+  .then(data => {
+      alert("Paciente cadastrado com sucesso!");
+
+      // Vai para a tela de triagem
+      window.location.href = "triagem.html";
+  })
+
+  .catch(err => {
+      alert("Erro ao cadastrar o paciente.");
+      console.error(err);
+  });
+
+}
+
+
+
+
+triagem 
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Triagem</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+<div class="container">
+<h2>🏥 Triagem Hospitalar</h2>
+<input id="nome" placeholder="Nome">
+
+<select id="sintoma">
+
+<option value="">Selecione</option>
+<option value="dor_leve">Dor leve</option>
+<option value="resfriado">Resfriado</option>
+<option value="coriza">Coriza</option>
+<option value="tosse">Tosse</option>
+<option value="febre">Febre</option>
+<option value="vomito">Vômito</option>
+<option value="diarreia">Diarreia</option>
+<option value="falta_ar_moderada">Falta de ar moderada</option>
+<option value="falta_ar_grave">Falta de ar grave</option>
+<option value="infarto">Suspeita de infarto</option>
+<option value="avc">Suspeita de AVC</option>
+<option value="convulsao">Convulsão</option>
+<option value="hemorragia">Hemorragia</option>
+
+</select>
+
+<input
+  id="temp"
+  type="number"
+  placeholder="Temperatura"
+/>
+
+<input
+  id="alergia"
+  placeholder="Alergias"
+/>
+
+<textarea
+  id="observacao"
+  placeholder="Observações"
+></textarea>
+
+<div id="resultado"></div>
+
+<button onclick="salvar()">
+Salvar Triagem
+</button>
+
+</div>
+
+<script>
+
+function classificarRisco(sintoma, temperatura){
+
+  const vermelhos = [
+    "infarto",
+    "avc",
+    "convulsao",
+    "hemorragia",
+    "falta_ar_grave"
+  ];
+
+  const amarelos = [
+    "febre",
+    "vomito",
+    "diarreia",
+    "falta_ar_moderada"
+  ];
+
+  if (temperatura >= 39) {
+    return "vermelho";
+  }
+
+  if (vermelhos.includes(sintoma)) {
+    return "vermelho";
+  }
+
+  if (amarelos.includes(sintoma)) {
+    return "amarelo";
+  }
+
+  return "verde";
+}
+
+function salvar(){
+
+  const nome =
+    document.getElementById("nome").value;
+
+  const sintoma =
+    document.getElementById("sintoma").value;
+
+  const temperatura =
+    Number(document.getElementById("temp").value);
+
+  const alergia =
+    document.getElementById("alergia").value;
+
+  const observacao =
+    document.getElementById("observacao").value;
+
+  const risco =
+    classificarRisco(sintoma, temperatura);
+
+  fetch("http://localhost:3000/triagem", {
+
+    method:"POST",
+
+    headers:{
+      "Content-Type":"application/json"
+    },
+
+    body: JSON.stringify({
+
+      nome,
+      sintoma,
+      temperatura,
+      alergia,
+      observacao,
+      risco
+
+    })
+
+  })
+
+  .then(r => r.json())
+
+  .then(data => {
+
+    const resultado =
+      document.getElementById("resultado");
+
+    resultado.className = risco;
+
+    resultado.innerHTML =
+      "Classificação: " +
+      risco.toUpperCase();
+
+    alert("Triagem salva");
+
+  });
+
+}
+
+
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+  <h2>🩺 Painel Médico</h2>
+
+  <div id="triagens"></div>
+
+  <hr>
+
+  <h3>Consulta</h3>
+
+  <input id="paciente" placeholder="Paciente" readonly>
+
+  <input id="diagnostico" placeholder="Diagnóstico">
+
+  <select id="medicacao">
+    <option value="">Selecione a medicação</option>
+  </select>
+
+  <textarea id="obs" placeholder="Observações"></textarea>
+
+  <button onclick="salvar()">Salvar</button>
+
+</div>
+
+<script>
+
+let triagensCarregadas = [];
+
+function carregar() {
+  fetch("/triagens")
+    .then(r => r.json())
+    .then(data => {
+      triagensCarregadas = data;
+
+      const div = document.getElementById("triagens");
+      div.innerHTML = "";
+
+      data.forEach((t, index) => {
+        div.innerHTML += `
+          <div class="card">
+            <h3>${t.nome}</h3>
+
+            <p><b>Sintoma:</b> ${t.sintoma || "Não informado"}</p>
+
+            <p><b>Temperatura:</b> ${t.temperatura || "Não informada"}°C</p>
+
+            <p>
+              <span class="${t.risco}">
+                ${t.risco}
+              </span>
+            </p>
+
+            <p><b>Alergia:</b> ${t.alergia || "Nenhuma"}</p>
+
+            <p><b>Observação:</b> ${t.observacao || "Nenhuma"}</p>
+
+            <button onclick="selecionar(${index})">
+              Atender
+            </button>
+          </div>
+        `;
+      });
+    });
+}
+
+function selecionar(index) {
+  const t = triagensCarregadas[index];
+
+  document.getElementById("paciente").value = t.nome;
+  document.getElementById("obs").value = t.observacao || "";
+
+  if (t.alergia && t.alergia !== "Nenhuma") {
+    alert("⚠️ Paciente possui alergia: " + t.alergia);
+  }
+}
+
+function carregarMedicacoes() {
+  fetch("/lista-medicacoes")
+    .then(r => r.json())
+    .then(data => {
+      const select = document.getElementById("medicacao");
+
+      select.innerHTML = `
+        <option value="">Selecione a medicação</option>
+      `;
+
+      data.forEach(med => {
+        const option = document.createElement("option");
+        option.value = med;
+        option.textContent = med;
+        select.appendChild(option);
+      });
+    });
+}
+
+function salvar() {
+  const paciente = document.getElementById("paciente").value;
+  const diagnostico = document.getElementById("diagnostico").value;
+  const medicacao = document.getElementById("medicacao").value;
+  const obs = document.getElementById("obs").value;
+
+  if (!paciente) {
+    alert("Selecione um paciente clicando em Atender.");
+    return;
+  }
+
+  if (!medicacao) {
+    alert("Selecione uma medicação.");
+    return;
+  }
+
+  fetch("/consulta", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      paciente,
+      diagnostico,
+      medicacao,
+      obs
+    })
+  })
+  .then(r => r.json())
+  .then(() => {
+    alert("Consulta salva");
+
+    document.getElementById("diagnostico").value = "";
+    document.getElementById("medicacao").value = "";
+    document.getElementById("obs").value = "";
+  });
+}
+
+carregar();
+carregarMedicacoes();
+
+</script>
+
+</body>
+</html>
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+  <h2>🩺 Painel Médico</h2>
+
+  <div id="triagens"></div>
+
+  <hr>
+
+  <h3>Consulta</h3>
+
+  <input id="paciente" placeholder="Paciente" readonly>
+
+  <input id="diagnostico" placeholder="Diagnóstico">
+
+  <select id="medicacao">
+    <option value="">Selecione a medicação</option>
+  </select>
+
+  <textarea id="obs" placeholder="Observações"></textarea>
+
+  <button onclick="salvar()">Salvar Consulta</button>
+
+<div id="decisao" style="display:none">
+
+  <h3>Destino do paciente</h3>
+
+  <button onclick="internar()">
+    🏥 Internar
+  </button>
+
+  <button onclick="liberar()">
+    ✅ Liberar
+  </button>
+
+</div>
+
+<div id="voltar" style="display:none">
+
+  <button onclick="voltarMedico()">
+    ⬅ Voltar
+  </button>
+
+</div>
+
+
+<script>
+
+let triagensCarregadas = [];
+
+function carregar() {
+  fetch("/triagens")
+    .then(r => r.json())
+    .then(data => {
+      triagensCarregadas = data;
+
+      const div = document.getElementById("triagens");
+      div.innerHTML = "";
+
+      data.forEach((t, index) => {
+        div.innerHTML += `
+          <div class="card">
+            <h3>${t.nome}</h3>
+
+            <p><b>Sintoma:</b> ${t.sintoma || "Não informado"}</p>
+
+            <p><b>Temperatura:</b> ${t.temperatura || "Não informada"}°C</p>
+
+            <p>
+              <span class="${t.risco}">
+                ${t.risco}
+              </span>
+            </p>
+
+            <p><b>Alergia:</b> ${t.alergia || "Nenhuma"}</p>
+
+            <p><b>Observação:</b> ${t.observacao || "Nenhuma"}</p>
+
+            <button onclick="selecionar(${index})">
+              Atender
+            </button>
+          </div>
+        `;
+      });
+    });
+}
+
+function selecionar(index) {
+  const t = triagensCarregadas[index];
+
+  document.getElementById("paciente").value = t.nome;
+  document.getElementById("obs").value = t.observacao || "";
+
+  if (t.alergia && t.alergia !== "Nenhuma") {
+    alert("⚠️ Paciente possui alergia: " + t.alergia);
+  }
+}
+
+function carregarMedicacoes() {
+  fetch("/lista-medicacoes")
+    .then(r => r.json())
+    .then(data => {
+      const select = document.getElementById("medicacao");
+
+      select.innerHTML = `
+        <option value="">Selecione a medicação</option>
+      `;
+
+      data.forEach(med => {
+        const option = document.createElement("option");
+        option.value = med;
+        option.textContent = med;
+        select.appendChild(option);
+      });
+    });
+}
+
+function salvar() {
+  const paciente = document.getElementById("paciente").value;
+  const diagnostico = document.getElementById("diagnostico").value;
+  const medicacao = document.getElementById("medicacao").value;
+  const obs = document.getElementById("obs").value;
+
+  if (!paciente) {
+    alert("Selecione um paciente clicando em Atender.");
+    return;
+  }
+
+  if (!medicacao) {
+    alert("Selecione uma medicação.");
+    return;
+  }
+
+  fetch("/consulta", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      paciente,
+      diagnostico,
+      medicacao,
+      obs
+    })
+  })
+  .then(() => {
+
+    alert("Consulta salva");
+
+    document.getElementById("decisao").style.display = "block";
+
+
+
+carregar();
+carregarMedicacoes();
+
+</script>
+
+</body>
+</html>
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+* {box-sizing: border-box; margin: 0;
+padding: 0; font-family: Arial, sans-serif; }
+
+body {
+    background-color: #5c4033;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.tv-container {
+    display: flex;
+    width: 95vw;
+    height: 90vh;
+    gap: 18px;
+}
+
+.left-panel {
+    display: flex;
+    flex-direction: column;
+    width: 35%;
+    gap: 18px;
+}
+
+.right-panel {
+    display: flex;
+    flex-direction: column;
+    width: 65%;
+    gap: 18px;
+}
+
+.box {
+    background-color: aqua;
+    border: #5c4033;
+    border-radius: 15px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.box-title {
+    color: aliceblue;
+    font-size: 2.2vw;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+    margin-bottom: 12px;
+}
+
+/* Painel esquerdo - local (guiche ou consultorio) */
+
+.local-box {flex: 1;}
+.local-number {
+    color: red;
+    font-size: 9vw;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.local-type {
+    color: #555;
+    font-size: 1.8vw;
+    font-weight: bold;
+    margin-top: 6px;
+}
+
+
+/* historico */
+.history-box {
+    flex: 1;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.history-box .box-title {font-size: 1.8vw; align-self: center;}
+#history-list {
+    list-style: none;
+    width: 100%;
+    color: red;
+    font-size: 1.5vw;
+    font-weight: bold;
+    text-align: left;
+}
+
+#history-list li {
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding-bottom: 5px;
+}
+
+/* painel direito - nome do paciente */
+.patient-box {flex: 3;}
+.patient-name {
+    color: red;
+    font-size: 6.5vw;
+    font-weight: bold;
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+/* logo */
+.logo-box {flex: 1;}
+.logo-text {
+    color: pink;
+    font-size: 3.5vw;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* animacao de flesh quando chama */
+@keyframes flash {
+    0%, 100% {opacity: 1; }
+    50% { opacity: 0.3; }
+
+}
+
+.flash { animation: flash 0.5s ease 3;}
+
+    </style>
+    <title>tv</title>
+</head>
+<body>
+    <div class="tv-container">
+        <div class="left-panel">
+            <div class="box local-box">
+                <div class="box-title" id="local-tipo">GUICHE</div>
+                <div class="local-number" id="local-numero">--</div>
+            </div>
+
+            <div class="box history-box">
+                <div class="box-title">ultimas chamadas</div>
+                <ul id="history-list"> </ul>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="box patient-box">
+                <div class="box-title">paciente</div>
+                <div class="paciente-name" id="paciente-name".aguardando></div>
+            </div>
+            <div class="box logo-box">
+                <div class="logo-text"> 🤖 sistema hospitalar</div>
+            </div>
+        </div>
+    </div>
+    <script>
+let ultmold = null;
+
+// funçao criada para busca a chamada atual e o historia da tv em tempo real.
+function atualizar() {
+    fetch("/tv/chamada")
+    .then(r => r.json())
+    .then(data => {
+        const chamada = data.chamada;
+        const historico = data.historico || [];
+        if (chamada) {
+            document.getElementById("local-tipo").innerText = chamada.localTipo || "GUICHE";
+            document.getElementById("local-numero").innerText = chamada.localNumero || "--";
+            document.getElementById("patient-name").innerText = chamada.paciente || "AGUARDANDO...";
+
+            //Flash visual quando há chamada nova
+            if (chamada.id !== ultimoID) {
+                ultimoID =chamada.id;
+                const pacienteBox = document.querySelector(".patient-box");
+                pacienteBox.classList.remove("flash");
+                void pacienteBox.offsetWidth; // reflow
+                pacienteBox.classList.add("flash");
+            }
+        }
+
+// historico
+const list = document.getElementById("history-list");
+list.innerHTML = "";
+historico.slice(0, 4).forEach(h => {
+    const li = document.createElement("li");
+    const tipo = h.localTipo ? h.localTipo.substring(0,4) : "GUIC";
+    li.innerText = `${tipo}. ${h.localNumero} - ${h.paciente}`;
+    list.appendChild(li);
+});
+    
+})
+.catch(err => console.log("erro ao buscar chamada:", err));
+}
+
+// Polling a cada 2 segundos
+atualizar();
+setInterval(atualizar, 2000);
+
+    </script>
+</body>
+</html>
