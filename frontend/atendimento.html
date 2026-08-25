@@ -1,120 +1,349 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
+
 <head>
-  <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Atendimento - Hospital Santos da Isabel</title>
+
+  <link rel="stylesheet" href="./css/style.css">
 </head>
 
 <body>
 
-<div class="container">
+  <div class="container">
 
-  <h2>Atendimento</h2>
+    <h2>Atendimento</h2>
 
-  <input id="nome" placeholder="Nome completo">
-
-  <input id="documento" placeholder="CPF/RG ou outro documento">
-
-  <input id="dataNascimento" type="date" placeholder="Data de nascimento">
-
-  <select id="sexo">
-    <option value="">Selecione o sexo</option>
-    <option value="Homem">Homem</option>
-    <option value="Mulher">Mulher</option>
-  </select>
-
-  <input id="nomeMae" placeholder="Nome da mãe">
-
-  <select id="estadoCivil">
-    <option value="">Selecione o estado civil</option>
-    <option value="Solteiro">Solteiro(a)</option>
-    <option value="Casado">Casado(a)</option>
-    <option value="Divorciado">Divorciado(a)</option>
-    <option value="Viuvo">Viúvo(a)</option>
-    <option value="UniaoEstavel">União estável</option>
-  </select>
-
-  <input id="endereco" placeholder="Endereço">
-
-  <input id="telefone" type="tel" placeholder="Telefone">
-
-  <input id="email" type="email" placeholder="E-mail">
-
-  <input id="contatoEmergencia" placeholder="Contato de emergência">
-
-  <select id="tipo">
-    <option value="Convenio">Convênio</option>
-    <option value="Particular">Particular</option>
-  </select>
-
-  <input type="file" id="foto">
-
-  <button onclick="cadastrar()">Cadastrar</button>
-
-</div>
+    <p class="subtitulo">
+      Cadastro do paciente
+    </p>
 
 
-<script>
+    <input
+      id="nome"
+      type="text"
+      placeholder="Nome completo"
+      required
+    >
 
-function cadastrar(){
 
-  fetch("http://localhost:3000/atendimento", {
+    <input
+      id="documento"
+      type="text"
+      placeholder="CPF/RG ou outro documento"
+      required
+    >
 
-    method: "POST",
 
-    headers: {
-      "Content-Type": "application/json"
-    },
+    <input
+      id="dataNascimento"
+      type="date"
+      required
+    >
 
-    body: JSON.stringify({
 
-      nome: document.getElementById("nome").value,
+    <select id="sexo" required>
 
-      documento: document.getElementById("documento").value,
+      <option value="">
+        Selecione o sexo
+      </option>
 
-      dataNascimento: document.getElementById("dataNascimento").value,
+      <option value="Homem">
+        Homem
+      </option>
 
-      sexo: document.getElementById("sexo").value,
+      <option value="Mulher">
+        Mulher
+      </option>
 
-      nomeMae: document.getElementById("nomeMae").value,
+    </select>
 
-      estadoCivil: document.getElementById("estadoCivil").value,
 
-      endereco: document.getElementById("endereco").value,
+    <input
+      id="nomeMae"
+      type="text"
+      placeholder="Nome da mãe"
+    >
 
-      telefone: document.getElementById("telefone").value,
 
-      email: document.getElementById("email").value,
+    <select id="estadoCivil">
 
-      contatoEmergencia: document.getElementById("contatoEmergencia").value,
+      <option value="">
+        Selecione o estado civil
+      </option>
 
-      tipo: document.getElementById("tipo").value
+      <option value="Solteiro">
+        Solteiro(a)
+      </option>
 
-    })
+      <option value="Casado">
+        Casado(a)
+      </option>
 
-  })
+      <option value="Divorciado">
+        Divorciado(a)
+      </option>
 
-  .then(res => res.json())
+      <option value="Viuvo">
+        Viúvo(a)
+      </option>
 
-  .then(data => {
+      <option value="UniaoEstavel">
+        União estável
+      </option>
 
-    alert("Paciente cadastrado com sucesso!");
+    </select>
 
-    // envia para a página de triagem
-    window.location.href = "triagem.html";
 
-  })
+    <input
+      id="endereco"
+      type="text"
+      placeholder="Endereço"
+    >
 
-  .catch(err => {
 
-    console.error(err);
+    <input
+      id="telefone"
+      type="tel"
+      placeholder="Telefone"
+    >
 
-    alert("Erro ao cadastrar o paciente.");
 
-  });
+    <input
+      id="email"
+      type="email"
+      placeholder="E-mail"
+    >
 
-}
 
-</script>
+    <input
+      id="contatoEmergencia"
+      type="text"
+      placeholder="Contato de emergência"
+    >
+
+
+    <select id="tipo">
+
+      <option value="Convenio">
+        Convênio
+      </option>
+
+      <option value="Particular">
+        Particular
+      </option>
+
+    </select>
+
+
+    <input
+      type="file"
+      id="foto"
+      accept="image/*"
+    >
+
+
+    <button
+      type="button"
+      id="btnCadastrar"
+      onclick="cadastrar()"
+    >
+      Cadastrar
+    </button>
+
+
+    <div id="mensagem"></div>
+
+  </div>
+
+
+  <script>
+
+    async function cadastrar() {
+
+      const botao = document.getElementById("btnCadastrar");
+      const mensagem = document.getElementById("mensagem");
+
+
+      // Pega os dados
+      const nome = document.getElementById("nome").value.trim();
+
+      const documento =
+        document.getElementById("documento").value.trim();
+
+      const dataNascimento =
+        document.getElementById("dataNascimento").value;
+
+      const sexo =
+        document.getElementById("sexo").value;
+
+      const nomeMae =
+        document.getElementById("nomeMae").value.trim();
+
+      const estadoCivil =
+        document.getElementById("estadoCivil").value;
+
+      const endereco =
+        document.getElementById("endereco").value.trim();
+
+      const telefone =
+        document.getElementById("telefone").value.trim();
+
+      const email =
+        document.getElementById("email").value.trim();
+
+      const contatoEmergencia =
+        document.getElementById("contatoEmergencia").value.trim();
+
+      const tipo =
+        document.getElementById("tipo").value;
+
+
+      // Validação
+      if (!nome) {
+
+        alert("Digite o nome completo do paciente.");
+        return;
+
+      }
+
+
+      if (!documento) {
+
+        alert("Digite o CPF, RG ou outro documento.");
+        return;
+
+      }
+
+
+      if (!dataNascimento) {
+
+        alert("Informe a data de nascimento.");
+        return;
+
+      }
+
+
+      if (!sexo) {
+
+        alert("Selecione o sexo.");
+        return;
+
+      }
+
+
+      // Desativa o botão
+      botao.disabled = true;
+      botao.textContent = "Cadastrando...";
+
+      mensagem.textContent = "";
+
+
+      try {
+
+        const resposta = await fetch("/atendimento", {
+
+          method: "POST",
+
+          headers: {
+
+            "Content-Type": "application/json"
+
+          },
+
+          body: JSON.stringify({
+
+            nome: nome,
+
+            // Campo novo
+            documento: documento,
+
+            // Mantém compatibilidade caso o backend
+            // ainda esteja usando "cpf"
+            cpf: documento,
+
+            dataNascimento: dataNascimento,
+
+            sexo: sexo,
+
+            nomeMae: nomeMae,
+
+            estadoCivil: estadoCivil,
+
+            endereco: endereco,
+
+            telefone: telefone,
+
+            email: email,
+
+            contatoEmergencia: contatoEmergencia,
+
+            tipo: tipo
+
+          })
+
+        });
+
+
+        // Verifica se o servidor respondeu corretamente
+        if (!resposta.ok) {
+
+          const textoErro = await resposta.text();
+
+          console.error(
+            "Erro do servidor:",
+            resposta.status,
+            textoErro
+          );
+
+          throw new Error(
+            "Erro ao cadastrar paciente."
+          );
+
+        }
+
+
+        // Tenta receber JSON
+        const data = await resposta.json();
+
+        console.log("Paciente cadastrado:", data);
+
+
+        alert(
+          "Paciente cadastrado com sucesso!"
+        );
+
+
+        // Vai para a triagem
+        window.location.href = "/triagem.html";
+
+
+      } catch (erro) {
+
+        console.error(erro);
+
+        mensagem.textContent =
+          "Não foi possível cadastrar o paciente.";
+
+        mensagem.className = "erro";
+
+        alert(
+          "Erro ao cadastrar o paciente. Verifique se o servidor está funcionando."
+        );
+
+
+        botao.disabled = false;
+
+        botao.textContent = "Cadastrar";
+
+      }
+
+    }
+
+  </script>
 
 </body>
+
 </html>
