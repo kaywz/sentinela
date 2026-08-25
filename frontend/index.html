@@ -1,36 +1,287 @@
 <!DOCTYPE html>
- <div class="container">
-  <div class="logo">
-    <div class="cross">+</div>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Hospital Santos da Isabel</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #eaf4ff, #f8fbff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 430px;
+      background: white;
+      padding: 40px;
+      border-radius: 18px;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.12);
+      text-align: center;
+    }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      background: #1976d2;
+      border-radius: 18px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 48px;
+      font-weight: bold;
+      box-shadow: 0 5px 15px rgba(25, 118, 210, 0.3);
+    }
+
+    .logo::before {
+      content: "+";
+    }
+
+    h1 {
+      color: #16324f;
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .subtitulo {
+      color: #777;
+      font-size: 15px;
+      margin-bottom: 30px;
+    }
+
+    .campo {
+      text-align: left;
+      margin-bottom: 18px;
+    }
+
+    .campo label {
+      display: block;
+      color: #333;
+      font-weight: bold;
+      margin-bottom: 7px;
+      font-size: 14px;
+    }
+
+    .campo input {
+      width: 100%;
+      height: 48px;
+      padding: 0 15px;
+      border: 1px solid #ccd6e0;
+      border-radius: 9px;
+      outline: none;
+      font-size: 16px;
+      transition: 0.2s;
+    }
+
+    .campo input:focus {
+      border-color: #1976d2;
+      box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.12);
+    }
+
+    button {
+      width: 100%;
+      height: 50px;
+      border: none;
+      border-radius: 9px;
+      background: #1976d2;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 5px;
+    }
+
+    button:hover {
+      background: #125ca8;
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      background: #8bb8df;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    #mensagem {
+      margin-top: 18px;
+      font-size: 14px;
+      min-height: 20px;
+    }
+
+    .erro {
+      color: #d32f2f;
+    }
+
+    .sucesso {
+      color: #2e7d32;
+    }
+
+    .rodape {
+      margin-top: 25px;
+      color: #999;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="logo"></div>
+
+    <h1>Hospital Santos da Isabel</h1>
+
+    <p class="subtitulo">
+      Sistema de Atendimento Hospitalar
+    </p>
+
+    <div class="campo">
+      <label for="usuario">Usuário</label>
+      <input
+        id="usuario"
+        type="text"
+        placeholder="Digite seu usuário"
+        autocomplete="username"
+      >
+    </div>
+
+    <div class="campo">
+      <label for="senha">Senha</label>
+      <input
+        id="senha"
+        type="password"
+        placeholder="Digite sua senha"
+        autocomplete="current-password"
+      >
+    </div>
+
+    <button id="btnEntrar" onclick="login()">
+      Entrar
+    </button>
+
+    <div id="mensagem"></div>
+
+    <div class="rodape">
+      Hospital Santos da Isabel
+    </div>
+
   </div>
 
-  <input id="usuario" placeholder="Usuário">
-  <input id="senha" type="password" placeholder="Senha">
 
-  <button onclick="login()">Entrar</button>
-</div>
-  <h2>🏥 Hospital Santos da Isabel</h2>
+  <script>
 
- <script>
-function login() {
-  fetch("/login", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({
-    
-    })
-  })
-  .then(r => r.json())
-  .then(data => {
-    if(data.tipo === "triagem") location.href = "triagem.html";
-    if(data.tipo === "medico") location.href = "medico.html";
-    if(data.tipo === "atendimento") location.href = "atendimento.html";
-  });
-}
-</script>
+    function login() {
 
-<h2>🏥 Hospital Santos da Isabel</h2>
-<input id="usuario" placeholder="Usuário">
+      const usuario = document.getElementById("usuario").value.trim();
+      const senha = document.getElementById("senha").value;
+
+      const mensagem = document.getElementById("mensagem");
+      const botao = document.getElementById("btnEntrar");
+
+      mensagem.textContent = "";
+      mensagem.className = "";
+
+      if (!usuario || !senha) {
+        mensagem.textContent = "Digite o usuário e a senha.";
+        mensagem.className = "erro";
+        return;
+      }
+
+      botao.disabled = true;
+      botao.textContent = "Entrando...";
+
+      fetch("/login", {
+
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          usuario: usuario,
+          senha: senha
+        })
+
+      })
+
+      .then(response => {
+
+        if (!response.ok) {
+          throw new Error("Usuário ou senha inválidos.");
+        }
+
+        return response.json();
+
+      })
+
+      .then(data => {
+
+        if (data.tipo === "triagem") {
+          window.location.href = "triagem.html";
+        }
+
+        else if (data.tipo === "medico") {
+          window.location.href = "medico.html";
+        }
+
+        else if (data.tipo === "atendimento") {
+          window.location.href = "atendimento.html";
+        }
+
+        else {
+          mensagem.textContent = "Tipo de usuário não reconhecido.";
+          mensagem.className = "erro";
+
+          botao.disabled = false;
+          botao.textContent = "Entrar";
+        }
+
+      })
+
+      .catch(error => {
+
+        console.error(error);
+
+        mensagem.textContent = "Usuário ou senha inválidos.";
+        mensagem.className = "erro";
+
+        botao.disabled = false;
+        botao.textContent = "Entrar";
+
+      });
+
+    }
+
+    // Permite apertar Enter para fazer login
+    document.getElementById("senha").addEventListener("keydown", function(event) {
+
+      if (event.key === "Enter") {
+        login();
+      }
+
+    });
+
+  </script>
 
 </body>
+
 </html>
