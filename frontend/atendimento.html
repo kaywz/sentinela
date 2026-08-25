@@ -1,27 +1,54 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
 <div class="container">
 
-<h2>Atendimento</h2>
+  <h2>Atendimento</h2>
 
-<input id="nome" placeholder="Nome">
+  <input id="nome" placeholder="Nome completo">
 
-<input id="cpf" placeholder="CPF">
+  <input id="documento" placeholder="CPF/RG ou outro documento">
 
-<select id="tipo">
-  <option value="Convenio">Convenio</option>
-  <option value="Particular">Particular</option>
-</select>
+  <input id="dataNascimento" type="date" placeholder="Data de nascimento">
 
-<input type="file" id="foto">
+  <select id="sexo">
+    <option value="">Selecione o sexo</option>
+    <option value="Homem">Homem</option>
+    <option value="Mulher">Mulher</option>
+  </select>
 
-<button onclick="cadastrar()">Cadastrar</button>
+  <input id="nomeMae" placeholder="Nome da mãe">
+
+  <select id="estadoCivil">
+    <option value="">Selecione o estado civil</option>
+    <option value="Solteiro">Solteiro(a)</option>
+    <option value="Casado">Casado(a)</option>
+    <option value="Divorciado">Divorciado(a)</option>
+    <option value="Viuvo">Viúvo(a)</option>
+    <option value="UniaoEstavel">União estável</option>
+  </select>
+
+  <input id="endereco" placeholder="Endereço">
+
+  <input id="telefone" type="tel" placeholder="Telefone">
+
+  <input id="email" type="email" placeholder="E-mail">
+
+  <input id="contatoEmergencia" placeholder="Contato de emergência">
+
+  <select id="tipo">
+    <option value="Convenio">Convênio</option>
+    <option value="Particular">Particular</option>
+  </select>
+
+  <input type="file" id="foto">
+
+  <button onclick="cadastrar()">Cadastrar</button>
 
 </div>
 
@@ -30,44 +57,60 @@
 
 function cadastrar(){
 
- fetch("http://localhost:3000/atendimento",{
+  fetch("http://localhost:3000/atendimento", {
 
-  method:"POST",
+    method: "POST",
 
-  headers:{
-    "Content-Type":"application/json"
-  },
+    headers: {
+      "Content-Type": "application/json"
+    },
 
-  body: JSON.stringify({
+    body: JSON.stringify({
 
-    nome: document.getElementById("nome").value,
+      nome: document.getElementById("nome").value,
 
-    cpf: document.getElementById("cpf").value,
+      documento: document.getElementById("documento").value,
 
-    tipo: document.getElementById("tipo").value
+      dataNascimento: document.getElementById("dataNascimento").value,
+
+      sexo: document.getElementById("sexo").value,
+
+      nomeMae: document.getElementById("nomeMae").value,
+
+      estadoCivil: document.getElementById("estadoCivil").value,
+
+      endereco: document.getElementById("endereco").value,
+
+      telefone: document.getElementById("telefone").value,
+
+      email: document.getElementById("email").value,
+
+      contatoEmergencia: document.getElementById("contatoEmergencia").value,
+
+      tipo: document.getElementById("tipo").value
+
+    })
 
   })
 
- })
+  .then(res => res.json())
 
- .then(res => res.json())
-
- .then(data => {
+  .then(data => {
 
     alert("Paciente cadastrado com sucesso!");
 
     // envia para a página de triagem
     window.location.href = "triagem.html";
 
- })
+  })
 
- .catch(err => {
+  .catch(err => {
 
     console.error(err);
 
     alert("Erro ao cadastrar o paciente.");
 
- });
+  });
 
 }
 
